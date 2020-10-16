@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <functional>
+#include <iostream>
 
 #ifdef _WIN32
 #include <fcntl.h>
@@ -39,6 +40,7 @@
 #include "state.h"
 #include "subprocess.h"
 #include "util.h"
+#include "cpuload.h"
 
 namespace {
 
@@ -688,12 +690,21 @@ void RealCommandRunner::Abort() {
   subprocs_.Clear();
 }
 
+#define OPTIMAL_CPU_LOAD 0.9f
+
 bool RealCommandRunner::CanRunMore() const {
+  auto la = GetLoadAverage();
+  auto cl = zutils::cpu_load();
+
   size_t subproc_number =
       subprocs_.running_.size() + subprocs_.finished_.size();
-  return (int)subproc_number < config_.parallelism
-    && ((subprocs_.running_.empty() || config_.max_load_average <= 0.0f)
-        || GetLoadAverage() < config_.max_load_average);
+
+  bool result = ((int)subproc_number < config_.parallelism) &&
+      ((subprocs_.running_.empty() || config_.max_load_average <= 0.0f) || cl <= OPTIMAL_CPU_LOAD || la < config_.max_load_average);
+
+  //std::cout << " -- PP: " << config_.parallelism << " la: " << la << " cl: " << cl << " result: " << result << std::endl;
+
+  return result;
 }
 
 bool RealCommandRunner::StartCommand(Edge* edge) {

@@ -79,6 +79,7 @@ check_platform_supports_browse_mode(platform_supports_ninja_browse)
 add_library(libninja OBJECT
 	src/build_log.cc
 	src/build.cc
+	src/cpuload.cc
 	src/clean.cc
 	src/clparser.cc
 	src/dyndep.cc

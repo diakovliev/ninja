@@ -494,6 +494,7 @@ cxxvariables = []
 if platform.is_msvc():
     cxxvariables = [('pdb', 'ninja.pdb')]
 for name in ['build',
+             'cpuload',
              'build_log',
              'clean',
              'clparser',

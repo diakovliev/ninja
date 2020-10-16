@@ -1307,6 +1307,7 @@ int ReadFlags(int* argc, char*** argv,
         if (end == optarg)
           Fatal("-l parameter not numeric: did you mean -l 0.0?");
         config->max_load_average = value;
+        config->parallelism *= 2;
         break;
       }
       case 'n':
